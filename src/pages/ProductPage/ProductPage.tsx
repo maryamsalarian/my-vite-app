@@ -1,77 +1,21 @@
 import './ProductPage.scss';
-import { useEffect, useState } from 'react';
-import { fetchProducts } from '../../api/ProductsApi';
-import type { Product } from '../../types/ProductType';
-import ProductsTable from '../../components/Table/ProductsTable';
-import { Link } from 'react-router-dom';
-import ServerSidePagination from '../../components/Pagination/ServerSidePagination';
+import ServerFetchProductsTable from '../../components/Table/ServerFetchProductsTable';
+import ServerUseQueryProductsTable from '../../components/Table/ServerUseQueryProductsTable';
 
 const ProductPage: React.FC = () => {
-    const [products, setProducts] = useState<Product[]>([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-
-    // // event handler when clicking a button
-    // const handleFetch = async () => {
-    //     setLoading(true);
-    //     setError(null);
-    //     try {
-    //         const result = await fetchProducts();
-    //         setProducts(result);
-    //     } catch (error) {
-    //         setError('Failed to fetch products.');
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
-
-    useEffect(() => {
-        const getProducts = async () => {
-            try {
-                setLoading(true);
-                const products = await fetchProducts();
-                setProducts(products);
-                console.log(products);
-            } catch (error) {
-                console.log('error is:', error);
-                setError('Failed to fetch products.');
-            } finally {
-                setLoading(false);
-            }
-        };
-        getProducts();
-    }, []); // useEffect is only run once due to []. all set attributes are scheduled for after useEffect is done running.
-
-    if (loading) return <p>Loading products...</p>;
-    if (error) return <p>{error}</p>;
-
     return (
         <div className="product-page">
             <h2>Products Page</h2>
-            {/* automatic rendering of the table - useEffect */}
             <div className="products">
-                <h2>Proucts Table</h2>
-                <ServerSidePagination />
-
-                {/* no server-side pagination
-                <ProductsTable data={products}></ProductsTable> */}
+                <h2>Products Table</h2>
+                {/* using server-side pagination and simple fetch */}
+                {/* <ServerFetchProductsTable /> */}
+                {/* using server-side pagination and react-query */}
+                <ServerUseQueryProductsTable />
             </div>
-
-            {/* button to initiate api fetch - event handler
-            <div className="action">
-            <button className="fetch-data-btn" onClick={handleFetch}>
-            Fetch Products
-            </button>
-            {loading && <p>Loading...</p>}
-            {error && <p>{error}</p>}
+            <div className="note">
+                <h3>Note:</h3>
             </div>
-            <ul>
-            {products.map((p) => (
-                <li key={p.id}>
-                id: {p.id}, user id: {p.userId}, title: {p.title}
-                </li>
-                ))}
-                </ul> */}
             <ul>
                 <li>
                     Notice that router is case insensitive; e.g. "/proDucTs"

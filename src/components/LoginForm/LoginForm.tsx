@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { users } from '../../data/Users';
-import { validateLogin } from './LoginFormUtils';
+// import { users } from '../../data/Users';
+// import { validateLogin } from './LoginFormUtils';
 import { useNavigate } from 'react-router-dom';
 import './LoginForm.scss';
 
@@ -9,17 +9,24 @@ const LoginForm = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
-    // useNavigate is an idomatic hook
-    // useNavigate is fully typed in React Router v.6+
-    // inferred type is: NavigateFunction
-    // type NavigateFunction = (
-    //     to: To | number,
-    //     options?: { replace?: boolean; state?: any }
-    //     ) => void;
+    {
+        /*
+        useNavigate is an idomatic hook
+        useNavigate is fully typed in React Router v.6+
+        inferred type is: NavigateFunction
+        type NavigateFunction = (
+        to: To | number,
+        options?: { replace?: boolean; state?: any }
+        ) => void;
+         */
+    }
 
     const navigate = useNavigate();
 
-    const handleSubmit = (e: React.FormEvent) => {
+    {
+        /* 
+        // local user-password validation
+        const handleSubmit = (e: React.FormEvent) => {
         // stops the page from refreshing when form is submitted
         e.preventDefault();
 
@@ -30,6 +37,41 @@ const LoginForm = () => {
 
         setError('');
         navigate('/about');
+    };
+    */
+    }
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            const url = `https://jsonplaceholder.typicode.com/users`;
+            const response = await fetch(url);
+            if (!response)
+                throw new Error(
+                    `Response error when fetching users: ${response}`,
+                );
+            const users = await response.json();
+            const user = users.find(
+                (user: { email: string }) =>
+                    user.email.toLowerCase() === username.toLowerCase(),
+            );
+            if (!user) {
+                setError('Invalid username or password.');
+                return;
+            }
+            const expectedPassword = `${user.address.zipcode.split('-')[0]}${
+                user.address.city.split(' ')[0]
+            }`; //first part of zipcode + first word of city if multi-word
+            if (password !== expectedPassword) {
+                setError('Invalid username or password.');
+                return;
+            }
+            setError('');
+            navigate('/about');
+        } catch (error) {
+            console.log('Login error: ', error);
+            setError('Invalid username or password.');
+        }
     };
 
     return (
